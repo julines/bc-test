@@ -24,23 +24,23 @@ $app->get('/histogram/{username}', function($username) use($app) {
 	$access_token_secret = '5r7ByKymQXLGUeyH4xs8lh4XeeLZFl5pVi63LQAhE1W7c';
 
 	$connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $access_token, $access_token_secret);
-	// $user = $connection->get("account/verify_credentials");
-	//$statuses = $connection->get("search/tweets", ["q" => "arsenal"]);
-	$statuses = $connection->get("statuses/user_timeline", ["screen_name" => $username]);
+	//The assumption is that the twitter API "statuses/user_timeline retrieves the users' tweet for the last 2000 tweets"
+	$statuses = $connection->get("statuses/user_timeline", ["screen_name" => $username, "include_rts" => 1, "count" => 2000]);
 	$result = count($statuses);
-	$counter = 0;
-	$tweets = array("0"=>0,"1"=>0,"2"=>0,"3"=>0,"4"=>0,"5"=>0,"6"=>0,"7"=>0,"8"=>0,"9"=>0,"10"=>0,"11"=>0,"12"=>0,"13"=>0,"14"=>0,"15"=>0,"16"=>0,"17"=>0,"18"=>0,"19"=>0,"20"=>0,"21"=>0,"22"=>0,"23"=>0)
+	$tweets = array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+	// $counter = 0;
 	foreach ($statuses as $status) {
 		$jsonArray = json_encode($status);
 		$strArray = json_decode($jsonArray,true);
-		echo var_dump($strArray["created_at"]).'<br/>';
-		//convert string to datetime
-		//check the hour and allocate to the $tweets array according to its hours
+		//An example of the string format of date returned is Mon May 30 09:48:10 +0000 2016
+		$createdAtDate = date_create_from_format('D M j H:i:s O Y', $strArray['created_at']);
+		if($createdAtDate->format('Y-m-d') == date('Y-m-d')) {
+			// $counter++;
+			$createdAtHour = $createdAtDate->format('G');
+			$tweets[$createdAtHour]++;
+		}
 	}
-	//convert $tweets to json
-	//return the $tweets in json
-	return $result;
-	
+	return json_encode($tweets, JSON_FORCE_OBJECT);
 });
 
 $app->run();

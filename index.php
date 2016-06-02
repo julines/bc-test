@@ -33,7 +33,7 @@ $app->get('/histogram/{username}', function($username) use($app) {
 
 	$connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $access_token, $access_token_secret);
 	//The assumption is that the twitter API "statuses/user_timeline retrieves the users' tweet for the last 2000 tweets"
-	$statuses = $connection->get("statuses/user_timeline", ["screen_name" => $username, "include_rts" => 1, "count" => 2000]);
+	$statuses = $connection->get("statuses/user_timeline", ["screen_name" => $username, "include_rts" => 1, "count" => 2400]);
 	$result = count($statuses);
 	$tweets = array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
 	// $counter = 0;

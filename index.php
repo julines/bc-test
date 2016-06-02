@@ -6,6 +6,14 @@ require_once __DIR__ . '/vendor/autoload.php';
 use Abraham\TwitterOAuth\TwitterOAuth;
 
 $app = new Silex\Application();
+
+if (isset($app_env) && in_array($app_env, array('prod','dev','test'))) {
+    $app['env'] = $app_env;
+}
+else {
+    $app['env'] = 'prod';
+}
+
 $app['debug'] = true;
 
 define('CONSUMER_KEY', "1rIb14Mq5JhoS3CFied4CJQw2");
@@ -43,6 +51,9 @@ $app->get('/histogram/{username}', function($username) use($app) {
 	return json_encode($tweets, JSON_FORCE_OBJECT);
 });
 
-$app->run();
+if ('test' == $app['env'])
+    return $app;
+else
+    $app->run();
 
 ?>
